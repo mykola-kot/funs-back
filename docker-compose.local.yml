@@ -1,0 +1,59 @@
+networks:
+  funs_back:
+    driver: bridge
+
+services:
+  ##########################
+  ### SETUP BACKEND CONTAINER
+  ##########################
+  funs_server:
+    entrypoint: "npm run start:dev"
+    command: npm run start:dev
+    image: funs_server
+    container_name: funs_server
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: app
+    restart: unless-stopped
+    env_file:
+      - './.env'
+    volumes:
+      - ./src:/opt/node_app/src
+      - ./logs:/opt/node_app/logs
+      - /opt/node_app/node_modules
+    ports:
+      - ${PORT:-4000}:${PORT:-4000}
+    depends_on:
+      funs_mysql:
+        condition: service_healthy
+    networks:
+      - funs_back
+
+  ##########################
+  ### SETUP DB CONTAINER
+  ##########################
+  funs_mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    hostname: 'funs_mysql'
+    container_name: funs_mysql
+    env_file:
+      - './.env'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - ${DB_PORT:-3306}:3306
+    volumes:
+      - ./.docker/mysql/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", '-u', DB_USER, '--password=$DB_PASSWORD']
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    shm_size: 256m
+    networks:
+      - funs_back
