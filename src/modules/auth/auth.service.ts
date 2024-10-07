@@ -7,8 +7,9 @@ export class AuthService {
   constructor(private readonly jwtService: JwtService) {}
 
   async login(data: LoginDto): Promise<{ token: string }> {
-    if (data.name !== 'root' && data.password !== 'root')
+    if (data.name !== process.env.DEFAULT_USER && data.password !== process.env.DEFAULT_PASS) {
       throw new BadRequestException();
+    }
 
     const token = await this.jwtService.signAsync(
       { name: data.name },

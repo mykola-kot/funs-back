@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthDisable } from '../../common/decorators/auth';
 import { UserModel } from '../../models/user.model';
+import {UserDto} from "./dto/user.dto";
 
 @Controller('api/v1/')
 @AuthDisable()
@@ -10,7 +11,7 @@ export class UserController {
 
   @Post('add-user')
   async addUser(
-    @Body() userData: { name: string; email: string; phone: string },
+    @Body() userData: UserDto,
   ): Promise<UserModel> {
     return this.userService.createUser(userData);
   }
