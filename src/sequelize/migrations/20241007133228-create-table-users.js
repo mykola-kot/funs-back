@@ -8,7 +8,6 @@ module.exports = {
         await queryInterface.createTable('users', {
             id: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
                 autoIncrement: true,
                 unique: true,
                 primaryKey: true,
