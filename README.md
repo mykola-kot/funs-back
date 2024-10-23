@@ -1,6 +1,6 @@
 # Simple App
 
-This repository contains the solution for the test assignment.
+This repository contains the solution for the test assignment. The time limit is up to 3 hours.
 
 ## Important Note
 
